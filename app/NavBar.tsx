@@ -1,6 +1,6 @@
 "use client";
 
-import { Console, log } from "console";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
