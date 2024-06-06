@@ -1,10 +1,11 @@
 import React from "react";
 import { Table } from "@radix-ui/themes";
-import Link from "next/link";
+
 import prisma from "@/prisma/client";
 import IssueStatusBadge from "../components/IssueStatusBadge";
 import delay from "delay";
 import IssueActions from "./IssuesActions";
+import Link from "../components/Link";
 
 
 const IssuesPage = async () => {
@@ -12,8 +13,7 @@ const IssuesPage = async () => {
   await delay(2000);
 
   return (
-    <div>
-      <div className="mb-5"> </div>
+       <div className="mb-5"> 
       <IssueActions />
       <Table.Root variant="surface">
         <Table.Header>
