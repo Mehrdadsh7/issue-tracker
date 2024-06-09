@@ -24,14 +24,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.variable}>
         <QueryCliebtProvider>
-        <AuthProvider>
-        <Theme accentColor="tomato" grayColor="slate">
-          <NavBar />
-          <main className="p-5">
-            <Container>{children}</Container>
-          </main>
-        </Theme>
-        </AuthProvider>
+          <AuthProvider>
+            <Theme accentColor="tomato" grayColor="slate">
+              <NavBar />
+              <main className="p-5">
+                <Container>{children}</Container>
+              </main>
+            </Theme>
+          </AuthProvider>
         </QueryCliebtProvider>
       </body>
     </html>
