@@ -1,15 +1,37 @@
 import prisma from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
-import { IssueStatusBadge, Link } from "@/app/components";
 
-import IssueActions from "./IssuesActions";
+import { IssueStatusBadge, Link } from "@/app/components/index";
 
-const IssuesPage = async () => {
-  const issues = await prisma.issue.findMany();
+import IssueActions from "./IssueActions";
+import { Status } from "@prisma/client";
+
+interface Props {
+  searchParams: { status: string }
+}
+
+const IssuesPage = async ({
+  searchParams,
+}: Props) => {
+
+  const statuses = Object.values(Status) as string[];
+  const status = statuses.includes(searchParams.status) ? searchParams.status as Status : undefined;
+  let issues;
+
+  if (searchParams.status === "all") {
+    issues = await prisma.issue.findMany();
+  } else {
+    issues = await prisma.issue.findMany({
+      where: {
+        status: status // Ensuring proper type
+      }
+    });
+  }
 
   return (
-    <div className="mb-5">
+    <div>
       <IssueActions />
+
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
@@ -22,6 +44,7 @@ const IssuesPage = async () => {
             </Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
+
         <Table.Body>
           {issues.map((issue) => (
             <Table.Row key={issue.id}>
@@ -45,6 +68,6 @@ const IssuesPage = async () => {
   );
 };
 
-
+export const dynamic = "force-dynamic";
 
 export default IssuesPage;
