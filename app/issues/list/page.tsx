@@ -1,13 +1,17 @@
 import prisma from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
-import { IssueStatusBadge, Link } from "@/app/components/index";
-import NextLink from "next/link";
+
+import { IssueStatusBadge } from "@/app/components/index";
+
 import IssueActions from "./IssueActions";
 import { Issue, Status } from "@prisma/client";
+
+import NextLink from "next/link";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 interface Props {
-  searchParams: { status: string , orderBy: keyof Issue };
+  searchParams: { status: string, orderBy: keyof Issue };
 }
 
 const IssuesPage = async ({ searchParams }: Props) => {
@@ -25,15 +29,28 @@ const IssuesPage = async ({ searchParams }: Props) => {
   const status = statuses.includes(searchParams.status)
     ? (searchParams.status as Status)
     : undefined;
-  let issues;
 
+  // Ensure orderBy is a valid field of Issue
+  const validOrderByFields = columns.map(column => column.value);
+  const orderByField = validOrderByFields.includes(searchParams.orderBy)
+    ? searchParams.orderBy
+    : "createdAt"; // Default to a valid field if undefined
+
+  let issues;
   if (searchParams.status === "all") {
-    issues = await prisma.issue.findMany();
+    issues = await prisma.issue.findMany({
+      orderBy: {
+        [orderByField]: 'asc'
+      }
+    });
   } else {
     issues = await prisma.issue.findMany({
       where: {
         status: status, // Ensuring proper type
       },
+      orderBy: {
+        [orderByField]: 'asc'
+      }
     });
   }
 
@@ -44,14 +61,15 @@ const IssuesPage = async ({ searchParams }: Props) => {
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
-            {columns.map((column) => (
-              <Table.ColumnHeaderCell key={column.value}>
-                <NextLink href={{
-                  query: {...searchParams, orderBy: column.value}             
-                }}> {column.label}</NextLink>
-                {column.value === searchParams.orderBy && <ArrowUpIcon className="inline"/> }
-              </Table.ColumnHeaderCell>
-            ))}
+            {columns.map(column => <Table.ColumnHeaderCell key={column.value}>
+              <NextLink href={{
+                query: {...searchParams, orderBy: column.value}
+              }}>
+              {column.label}
+              </NextLink>
+              {column.value === orderByField && <ArrowUpIcon className="inline" /> }
+              </Table.ColumnHeaderCell> )}
+            
           </Table.Row>
         </Table.Header>
 
